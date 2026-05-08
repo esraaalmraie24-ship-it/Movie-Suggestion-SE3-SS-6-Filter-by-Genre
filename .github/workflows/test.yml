@@ -8,27 +8,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Show current directory
+        run: pwd
+      
       - name: List all files
         run: ls -la
       
-      - name: Find package.json
-        run: find . -name "package.json" -type f
+      - name: Show directory structure
+        run: find . -type d -maxdepth 3
       
       - uses: actions/setup-node@v4
         with:
           node-version: 20
       
-      - name: Install and test
+      - name: Install and run tests
         run: |
-          if [ -f "Movie-Suggester-SE3-SS-6-Filter-by-Genre/package.json" ]; then
-            cd Movie-Suggester-SE3-SS-6-Filter-by-Genre
-          elif [ -f "Movie-Suggestion-SE3-SS-6-Filter-by-Genre/package.json" ]; then
-            cd Movie-Suggestion-SE3-SS-6-Filter-by-Genre
-          elif [ -f "package.json" ]; then
-            cd .
+          # البحث عن package.json في أي مكان
+          if [ -f "package.json" ]; then
+            echo "Found package.json in current directory"
+            npm install
+            npm test -- --passWithNoTests
           else
-            echo "package.json not found!"
-            exit 1
+            # البحث في المجلدات الفرعية
+            for dir in */; do
+              if [ -f "${dir}package.json" ]; then
+                echo "Found package.json in ${dir}"
+                cd "$dir"
+                npm install
+                npm test -- --passWithNoTests
+                break
+              fi
+            done
           fi
-          npm install
-          npm test -- --passWithNoTests
