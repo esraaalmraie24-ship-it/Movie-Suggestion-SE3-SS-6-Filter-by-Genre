@@ -7,12 +7,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      - name: List all files
+        run: ls -la
+      
+      - name: Find package.json
+        run: find . -name "package.json" -type f
+      
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install dependencies
+      
+      - name: Install and test
         run: |
+          if [ -f "Movie-Suggester-SE3-SS-6-Filter-by-Genre/package.json" ]; then
+            cd Movie-Suggester-SE3-SS-6-Filter-by-Genre
+          elif [ -f "Movie-Suggestion-SE3-SS-6-Filter-by-Genre/package.json" ]; then
+            cd Movie-Suggestion-SE3-SS-6-Filter-by-Genre
+          elif [ -f "package.json" ]; then
+            cd .
+          else
+            echo "package.json not found!"
+            exit 1
+          fi
           npm install
-          npm install --save-dev jest
-      - name: Run tests
-        run: npm test -- --passWithNoTests
+          npm test -- --passWithNoTests
