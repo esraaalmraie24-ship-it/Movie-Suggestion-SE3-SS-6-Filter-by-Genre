@@ -7,23 +7,23 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          path: ./Movie-Suggester-SE3-SS-6-Filter-by-Genre
+      - uses: actions/checkout@v4
       
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
       
-      - name: Navigate to project and install dependencies
+      - name: List files
+        run: ls -la
+      
+      - name: Install dependencies
         run: |
-          cd ./Movie-Suggester-SE3-SS-6-Filter-by-Genre
+          find . -name "package.json" -exec dirname {} \;
+          cd $(find . -name "package.json" -exec dirname {} \; | head -1)
           npm install
-          npm install --save-dev jest
       
       - name: Run tests
         run: |
-          cd ./Movie-Suggester-SE3-SS-6-Filter-by-Genre
+          cd $(find . -name "package.json" -exec dirname {} \; | head -1)
           npm test
